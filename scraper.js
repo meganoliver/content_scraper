@@ -7,6 +7,7 @@ const 	scrapeIt = require("scrape-it"),
  // Global variables
  let shirtUrls =[];
  let url = [];
+ let img = [];
  let fields = ['Title', 'Price', 'ImageURL', 'URL', 'Time'];
  let shirtData = [];
 
@@ -28,7 +29,9 @@ scrapeIt('http://shirts4mike.com/shirts.php', {
 	}
 }).then(({ data, response }) => {
 	shirtUrls = (data.shirts);
-	console.log(shirtUrls);
+	url = shirtUrls.map(obj => obj.link);
+	img = shirtUrls.map(obj => obj.pic);
+	console.log(img);
 	
 });
 
