@@ -1,39 +1,66 @@
 //Dependencies:
 
-const 	scrapeIt = require("scrape-it"),
+const 	crawler = require('crawler');
 		fs = require('fs'),
 		csv = require('json2csv');
 
  // Global variables
- let shirtUrls =[];
- let url = [];
- let img = [];
- let fields = ['Title', 'Price', 'ImageURL', 'URL', 'Time'];
- let shirtData = [];
+const 	shirtData = [];
 
 // Access the website  http://shirts4mike.com ( http://shirts4mike.com/shirts.php)
-scrapeIt('http://shirts4mike.com/shirts.php', {
-// Extract the data
-	shirts: {
-		listItem: '.products li',
-		data: {
-			link: {
-				selector: 'a',
-				attr: 'href'
-			},
-			pic: {
-				selector: 'img',
-				attr: 'src'
-			}
+const scrapeUrls = new crawler({
+	callback : function(error, res, done) {
+		if(error) {
+			console.log(res.statusCode);
+		} else {
+			let $ = res.$;
+		//Grab each shirts url
+			let products = $('.products li a');
+			products.each(function() {
+				let url = 'http://shirts4mike.com/' + $(this).attr("href");
+			//Visit each shirt's page and grab the needed data
+				scrapeShirts(url);
+			})	
 		}
+		done();
 	}
-}).then(({ data, response }) => {
-	shirtUrls = (data.shirts);
-	url = shirtUrls.map(obj => obj.link);
-	img = shirtUrls.map(obj => obj.pic);
-	console.log(img);
-	
 });
+
+scrapeUrls.queue('http://shirts4mike.com/shirts.php');
+
+//Scrape shirt data
+function scrapeShirts(url) {
+	const c = new crawler({
+		callback: function(error, res, done) {
+			if(error) {
+				console.log(res.statusCode);
+			} else {
+				let $ = res.$;
+				let shirtInfo = {};
+				shirtInfo = {
+					title: $('.shirt-details h1').text(),
+					price: $('.price').text(),
+					image: $('img').attr('src'),
+					url: url,
+					time: new Date().toJSON()
+				};
+				shirtData.push(shirtInfo);
+				
+			}
+			console.log(shirtData);
+			done();
+		}
+
+	});
+	c.queue(url);
+}
+
+
+	
+	// Extract the data
+
+// Visit each shirt's site and scrape remaining info.
+
 
 
 
