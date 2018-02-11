@@ -2,16 +2,25 @@
 
 const 	crawler = require('crawler');
 		fs = require('fs'),
-		csv = require('json2csv');
+		json2Csv = require('json2csv');
 
  // Global variables
-const 	shirtData = [];
+const 	shirtData = [],
+		directory = './data';
+
+// Check for data folder
+try {
+	fs.statSync(directory);
+} catch(e) {
+	fs.mkdirSync(directory);
+}
+
 
 // Access the website  http://shirts4mike.com ( http://shirts4mike.com/shirts.php)
 const scrapeUrls = new crawler({
 	callback : function(error, res, done) {
 		if(error) {
-			console.log(res.statusCode);
+			console.error(`I'm sorry, there's been a ${res.statusCode} error. Cannot connect to http://shirts$mike.com`);
 		} else {
 			let $ = res.$;
 		//Grab each shirts url
@@ -20,7 +29,7 @@ const scrapeUrls = new crawler({
 				let url = 'http://shirts4mike.com/' + $(this).attr("href");
 			//Visit each shirt's page and grab the needed data
 				scrapeShirts(url);
-			})	
+			})	 
 		}
 		done();
 	}
@@ -38,32 +47,33 @@ function scrapeShirts(url) {
 				let $ = res.$;
 				let shirtInfo = {};
 				shirtInfo = {
-					title: $('.shirt-details h1').text(),
-					price: $('.price').text(),
-					image: $('img').attr('src'),
-					url: url,
-					time: new Date().toJSON()
+					Title: $('.shirt-details h1').text(),
+					Price: $('.price').text(),
+					ImageUrl: $('img').attr('src'),
+					URL: url,
+					Time: new Date().toJSON()
 				};
-				shirtData.push(shirtInfo);
-				
+			shirtData.push(shirtInfo);
+
+			//Recored the date for file name
+			let date = new Date();
+			let month = date.getMonth() + 1;
+			let day = date.getDate();
+			let year = date.getFullYear();
+			let filePath = `${directory}/${year}-${month}-${day}.csv`;
+
+			//Create the csv
+			let fields = ['Title', 'Price', 'ImageUrl', 'URL', 'Time'];
+			let csv = json2Csv({data: shirtData, fields: fields});
+
+			//Write csv to file
+			fs.writeFileSync(filePath, csv);
 			}
-			console.log(shirtData);
 			done();
 		}
 
 	});
-	c.queue(url);
-}
 
-
+		c.queue(url);
 	
-	// Extract the data
-
-// Visit each shirt's site and scrape remaining info.
-
-
-
-
-//5. Add prices to CSV
-
-	//Create a CSB
+}

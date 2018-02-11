@@ -1,0 +1,24 @@
+{
+  "name": "content-scraper",
+  "version": "1.0.0",
+  "description": "A program to scrape t-shirt prices off a website.",
+  "main": "scraper.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/meganoliver/content_scraper.git"
+  },
+  "author": "Megan Oliver",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/meganoliver/content_scraper/issues"
+  },
+  "homepage": "https://github.com/meganoliver/content_scraper#readme",
+  "dependencies": {
+    "crawler": "^1.1.2",
+    "fs": "0.0.1-security",
+    "json2csv": "^3.11.5"
+  }
+}
