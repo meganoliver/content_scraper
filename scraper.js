@@ -60,7 +60,7 @@ function scrapeShirts(url) {
 	const c = new crawler({
 		callback: function(err, res, done) {
 			if(err) {
-				console.error(res.statusCode);
+				errorFile(res.statusCode);
 			} else {
 					let $ = res.$;
 					let shirtInfo = {};
@@ -95,7 +95,7 @@ function scrapeShirts(url) {
 	try {
 		c.queue(url);
 	} catch (err) {
-		console.error(res.statusCode);
+		errorFile(res.statusCode);
 	}
 	
 }
