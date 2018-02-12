@@ -52,7 +52,7 @@ const scrapeUrls = new crawler({
 	}
 });
 
-	scrapeUrls.queue('http://shirts4me.com/shirts.php');
+	scrapeUrls.queue('http://shirts4mike.com/shirts.php');
 
 
 //Scrape shirt data
