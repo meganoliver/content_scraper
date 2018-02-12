@@ -91,11 +91,5 @@ function scrapeShirts(url) {
 			} 
 		}
 	});
-
-	try {
 		c.queue(url);
-	} catch (err) {
-		errorFile(res.statusCode);
-	}
-	
 }
