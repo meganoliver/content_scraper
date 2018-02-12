@@ -16,26 +16,29 @@ try {
 
 //Error Function
 
-function errorFile(error) {
+function errorFile(err) {
 	let time = new Date(),
 		errorMsg = "";
 
-	if(error.code === "ENOTFOUND") {
-		errorMsg = `[${time}] ${error.code}: Cannot connect to http://shirts4mike.com\n`;
-		console.error = `[${time}] ${error.code}: Cannot connect to http://shirts4mike.com`;
+	if(err === 404) {
+		errorMsg = `[${time}] ${err}: Cannot connect to http://shirts4mike.com\n`;
+		console.error(`There's been a a ${err} error. Cannot connect to http://shirts4mike.com`)
 	} else {
-		errorMsg = `[${time}] ${error.code}: Sorry! Something went wrong!\n`;
-		console.error = `[${time}] ${error.code}: Sorry! Something went wrong!`;
+		errorMsg = `[${time}] ${err}: Sorry! Something went wrong!\n`;
+		console.error(`There's been a a ${err} error.`);
 	}
-	fs.appendFile('scraper-error.log', 'errMsg');
+	fs.appendFile('scraper-error.log', `${errorMsg}`, (err) => {
+		if(err) throw err;
+
+	});
 }
 
 // Access the website  http://shirts4mike.com ( http://shirts4mike.com/shirts.php)
 const scrapeUrls = new crawler({
-	callback : function(error, res, done) {
-		if(error) {
-			errorFile(error);
-		} else {
+	callback : function(err, res, done) {
+		if(res.statusCode != 200) {
+			errorFile(res.statusCode);
+		} else if(res.statusCode === 200){
 				let $ = res.$;
 			//Grab each shirts url
 				let products = $('.products li a');
@@ -49,18 +52,15 @@ const scrapeUrls = new crawler({
 	}
 });
 
-try{
-	scrapeUrls.queue('http://shirts4mike.com/shirts.php');
-} catch (error) {
-	errorFile(error);
-}
+	scrapeUrls.queue('http://shirts4me.com/shirts.php');
+
 
 //Scrape shirt data
 function scrapeShirts(url) {
 	const c = new crawler({
-		callback: function(error, res, done) {
-			if(error) {
-				errorFile(error);
+		callback: function(err, res, done) {
+			if(err) {
+				console.error(res.statusCode);
 			} else {
 					let $ = res.$;
 					let shirtInfo = {};
@@ -94,8 +94,8 @@ function scrapeShirts(url) {
 
 	try {
 		c.queue(url);
-	} catch (error) {
-		errorFile(error);
+	} catch (err) {
+		console.error(res.statusCode);
 	}
 	
 }
